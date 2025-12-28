@@ -1,0 +1,8 @@
+# Ignore everything
+*
+# Except this file
+!.gitignore
+# and the readme
+!README.md
+# and simple csvs
+!*.csv

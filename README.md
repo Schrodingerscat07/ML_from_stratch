@@ -1,2 +1,18 @@
-# ML_from_stratch
-This repo contains my implementations of various machine learning models and statistical algorithms from scratch. I built these to deepen my own understanding, and you’re welcome to use them as a learning resource too. I will try to keep thing clean and explain every step in comments.
+# ML From Scratch
+
+This repository contains implementations of machine learning algorithms from scratch.
+
+## Structure
+
+- **data/**: Central Data Storage
+- **autograd/**: The Engine (Value class, Neuron/Layer logic)
+- **linear_models/**: Linear and Logistic Regression
+- **unsupervized/**: SVD/Compression
+- **probabilistic/**: MCMC/Sampling
+- **utils/**: Shared Helpers
+
+## Installation
+
+```bash
+pip install -r requirements.txt
+```
