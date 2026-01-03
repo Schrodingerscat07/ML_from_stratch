@@ -1,25 +1,95 @@
+import math
+
 class Value:
+    # In this constructor takes 4 arguments
+    # data: the value of the variable
+    # _children: the children of the variable (the elemnts from which it was derived)
+    # _op: the operation that was performed to get the value
+    # label: the label of the variable (optional)
     def __init__(self, data, _children=(), _op='', label=''):
         self.data = data
-        self.grad = 0.0             # Stores the derivative (gradient)
-        self._prev = set(_children) # The Memory: Stores the parent nodes
-        self._op = _op              # The Operation: Stores how it was made (+, *)
-        self.label = label          # Purely Optional: Name the variable (e.g., 'a', 'b')
+        self.grad = 0.0 # stores the gradient
+        self._backward = lambda: None # stores the backward function None by default
+        self._prev = set(_children) # stores the previous values
+        self._op = _op # stores the operation
+        self.label = label # stores the label (optional)
 
-    def __repr__(self):
-        return f"Value(data={self.data})"
+    def __repr__(self): # returns the string representation of the value you can try without this to see the dfference
+        return f"Value(data={self.data}, grad={self.grad})"
 
-    def __add__(self, other):
-        # Make sure we are adding two Value objects
+    def __add__(self, other): # overloading the + operator
         other = other if isinstance(other, Value) else Value(other)
-        
-        # Create the new node
-        out = Value(self.data + other.data, (self, other), '+') # Memory: Stores the parent nodes and the operator
+        out = Value(self.data + other.data, (self, other), '+')
+
+        def _backward(): # stores the backward function for addition which is just adding the gradients
+          self.grad += out.grad #the gradient of the addition is the gradient of the output
+          other.grad += out.grad
+        out._backward = _backward
         return out
-    def __mul__(self, other):
+    def __sub__(self, other): # overloading the - operator
+        return self + (-other)
+    def __mul__(self, other): # overloading the * operator
         other = other if isinstance(other, Value) else Value(other)
-        out = Value(self.data * other.data, (self, other), "*") # Memory: Stores the parent nodes and the operator
+        out = Value(self.data * other.data, (self, other), '*')
+
+        def _backward(): # stores the backward function for multiplication which is just adding the gradients
+          self.grad += other.data * out.grad #the gradient of the multiplication is the product of the other value and the gradient of the output
+          other.grad += self.data * out.grad
+        out._backward = _backward
+        return out
+
+    def tanh(self):
+        x = self.data
+        t = (math.exp(2*x) - 1)/(math.exp(2*x) + 1)
+        out = Value(t, (self, ), 'tanh')
+
+        def _backward():
+          self.grad += (1 - t**2) * out.grad
+        out._backward = _backward
         return out
 
 
+    def backward(self):
+      topo = []
+      visited = set()
+      def build_topo(v):
+        if v not in visited:
+          visited.add(v)
+          for child in v._prev:
+            build_topo(child)
+          topo.append(v)
+      build_topo(self)
 
+      self.grad = 1.0
+      for node in reversed(topo):
+        node._backward()
+
+
+    def __neg__(self): # -self
+        return self * -1
+
+    def __rmul__(self, other):
+      return self * other
+
+
+    def exp(self):
+      x = self.data
+      out = Value(math.exp(x), (self, ), 'exp')
+      def _backward():
+        self.grad += out.data * out.grad
+      out._backward = _backward
+      return out
+
+    def __pow__(self, other):
+      assert isinstance(other, (int, float)), "only supporting int/float powers for now"
+      out = Value(self.data**other, (self, ), f'**{other}')
+      def _backward():
+        self.grad += (other * self.data**(other-1)) * out.grad
+      out._backward = _backward
+      return out
+
+    def __radd__(self, other):
+      return self + other
+
+    def __truediv__(self, other): # self / other
+        return self * other**-1
