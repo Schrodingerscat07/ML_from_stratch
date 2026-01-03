@@ -38,21 +38,21 @@ class Value:
         out._backward = _backward
         return out
 
-    def tanh(self):
+    def tanh(self): # overloading the tanh operator used to squeeze the values between -1 and 1
         x = self.data
         t = (math.exp(2*x) - 1)/(math.exp(2*x) + 1)
         out = Value(t, (self, ), 'tanh')
 
-        def _backward():
-          self.grad += (1 - t**2) * out.grad
+        def _backward(): # stores the backward function for tanh which is just adding the gradients
+          self.grad += (1 - t**2) * out.grad #the gradient of the tanh is the product of the other value and the gradient of the output
         out._backward = _backward
         return out
 
 
-    def backward(self):
+    def backward(self): # now you can try using _backward for each variable to understadn the working but this does all that for you
       topo = []
       visited = set()
-      def build_topo(v):
+      def build_topo(v): # builds the topological order of the variables
         if v not in visited:
           visited.add(v)
           for child in v._prev:
@@ -68,11 +68,11 @@ class Value:
     def __neg__(self): # -self
         return self * -1
 
-    def __rmul__(self, other):
+    def __rmul__(self, other):# overloading the * operator to follow the rules of multiplication
       return self * other
 
 
-    def exp(self):
+    def exp(self): # overloading the exp operator 
       x = self.data
       out = Value(math.exp(x), (self, ), 'exp')
       def _backward():
@@ -80,7 +80,7 @@ class Value:
       out._backward = _backward
       return out
 
-    def __pow__(self, other):
+    def __pow__(self, other): # overloading the ** operator
       assert isinstance(other, (int, float)), "only supporting int/float powers for now"
       out = Value(self.data**other, (self, ), f'**{other}')
       def _backward():
@@ -88,8 +88,14 @@ class Value:
       out._backward = _backward
       return out
 
-    def __radd__(self, other):
+    def __radd__(self, other): # overloading the + operator to follow the rules of addition
       return self + other
 
-    def __truediv__(self, other): # self / other
+    def __truediv__(self, other): # overloading the / operator to follow the rules of division
         return self * other**-1
+""" note that you can use different functions to perform the same operation but make sure to update 
+the backward function accordingly in my version i used both tanh the shorter form and the other form 
+of tanh(including the exp function) to calculate the gradient"""
+
+
+""" I have added a viz_autograd function to visualize the autograd process to use it to understand how the backward function works"""
