@@ -59,8 +59,11 @@ class Value:
             build_topo(child)
           topo.append(v)
       build_topo(self)
+      for node in topo:      # RESET
+        node.grad = 0.0
 
       self.grad = 1.0
+      
       for node in reversed(topo):
         node._backward()
 
