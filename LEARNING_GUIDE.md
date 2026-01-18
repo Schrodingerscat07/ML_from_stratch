@@ -28,7 +28,7 @@ to the algorithm.
 6. `trees/decision_tree.py` — split rules and information gain
 7. `trees/random_forest.py` — bagging + voting
 8. `trees/xgboost.py` — gradient boosting via residuals
-9. `unsupervized/svd.py` — unsupervised learning via power iteration and deflation
+9. `unsupervized/svd.py` — unsupervised learning via power iteration and deflation (folder name uses this spelling)
 10. `tests/test_tensor.py` — how gradients are validated
 11. `linear_models/logistic_regression.py`, `probabilistic/mcmc.py`, `utils/*` — currently placeholders
 
@@ -238,7 +238,7 @@ Each new tree models the **residual errors** of the current ensemble.
 
 ---
 
-## 9) `unsupervized/svd.py`: Singular Value Decomposition (Unsupervised Learning)
+## 9) `unsupervized/svd.py`: Singular Value Decomposition (Unsupervised Learning; folder name uses this spelling)
 
 ### Big Idea
 SVD factorizes `A` into `U Σ V^T`. This implementation uses **power iteration** to find one
