@@ -13,6 +13,11 @@ This repository contains implementations of machine learning algorithms from scr
 - **probabilistic/**: MCMC/Sampling
 - **utils/**: Shared Helpers
 
+## Learning Guide
+
+For a scratch-by-scratch walkthrough of every module (with intuition and line-by-line notes),
+see [LEARNING_GUIDE.md](LEARNING_GUIDE.md).
+
 ## Installation
 
 ```bash
